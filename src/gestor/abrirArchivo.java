@@ -76,7 +76,7 @@ public class abrirArchivo extends javax.swing.JFrame {
             if(archivo == null || archivo.getName().equals("")){
                 JOptionPane.showMessageDialog(this, "Nombre del archivo no valido", "Abrir archivo", JOptionPane.ERROR_MESSAGE);
             }else{
-                leerArchivo.setjTextField1(archivo.getAbsolutePath());
+                leerArchivo.setjTextField1(archivo.getAbsolutePath()); 
                 this.dispose();
             }
         }

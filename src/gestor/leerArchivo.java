@@ -14,6 +14,15 @@ import javax.swing.JTextField;
  * @author ALBERTHO MEDINA
  */
 public class leerArchivo extends javax.swing.JFrame {
+    
+    private static boolean isNumeric(String cadena){
+	try {
+		Integer.parseInt(cadena);
+		return true;
+	} catch (NumberFormatException nfe){
+		return false;
+	}
+}
 
     /**
      * Creates new form leerArchivo
@@ -68,7 +77,7 @@ public class leerArchivo extends javax.swing.JFrame {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(189, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -93,7 +102,7 @@ public class leerArchivo extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
-        jButton3.setText("Almacenar Procesos");
+        jButton3.setText("Mostrar Lista");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -107,13 +116,11 @@ public class leerArchivo extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 467, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 48, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addComponent(jButton2)
-                        .addGap(44, 44, 44)
+                        .addGap(106, 106, 106)
                         .addComponent(jButton3)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
@@ -130,8 +137,8 @@ public class leerArchivo extends javax.swing.JFrame {
                     .addComponent(jButton2)
                     .addComponent(jButton3))
                 .addGap(27, 27, 27)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -142,22 +149,149 @@ public class leerArchivo extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    
+        //  *************  ABRE LA VENTANA DEL BUSCADOR DE ARCHIVOS *************
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         abrirArchivo abrir = new abrirArchivo();
         abrir.show();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    //  ************* LEE EL ARCHIVO Y LAS COLOCA EN EL TEXT_AREA  *************
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
+        String instruc = ""; // CONTIENE LA CADENA DE INSTRUCCIONES LEIDA DEL ARCHIVO
         jTextArea1.setText("");
         try{
             int temp;
             FileReader file = new FileReader(jTextField1.getText());
             temp = file.read();
+            // LEE LAS INSTRUCCIONES DEL ARCHIVO Y LAS ALMACENA EN EL STRING instruc Y LAS MUESTRA EN EL TEXT_AREA
             while( temp != -1){
-                jTextArea1.setText(jTextArea1.getText() + (char)temp);
+                instruc = instruc + (char)temp;
                 temp = file.read();
             }
+            jTextArea1.setText(instruc + "\n ***** EL ARCHIVO SE HA LEIDO *****");
+            
+            
+        char[] info = instruc.toCharArray(); // CONVIERTE LA CADENA DE INSTRUCCIONES EN UN ARREGLO DE CARACTERES
+         String proceso = "";
+        Lista listaNuevo = new Lista(); // instancia lista Nuevo
+        for (int n = 0; n < info.length ; n++) { // RECORRE EL ARREGLO DE CARACTERES
+            if(info[n] !=  ';'){ // ¿ NO ES EL FIN DE UNA INSTRUCCION ?
+            proceso = proceso + info[n];
+            }else if(proceso.length() == 18){ // CUANDO YA SE LEIDO UNA INSTRUCCION COMPLETA
+                String datos[] = new String[6]; 
+                String dato = "";
+                int d = 0;
+                char tem[] = proceso.toCharArray(); // CONVIERTE LA CADENA DE DATOS DEL PROCESO EN UN CHAR ARRAY
+                
+                    for (int m = 0; m < proceso.length(); m++) { // RECORRE EL ARREGLO Y SEPARA LOS DATOS DEL PROCESO, LOS INTRODUCE EN EL ARRELGO DATOS
+                        if(tem[m] == '/'){
+                            datos[d] = dato;
+                            dato = "";
+                            d++;
+                        }else{
+                            dato = dato + tem[m];
+                        }      
+                    }
+                    datos[d] = dato;
+                    
+                    boolean continuar = true;
+                    int val[] = new int[6]; 
+                    for (int i = 0; i < datos.length; i++) {
+                        if(isNumeric(datos[i])){
+                            if (Integer.parseInt(datos[i]) >= 0) {
+                                val[i] = Integer.parseInt(datos[i]);
+                            }else{
+                                continuar = false;
+                                jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** EL EVENTO CONTIENE VALORES NEGATIVOS" + val[i]);
+                                break;
+                            }
+                        }else{
+                            continuar = false;
+                            jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** EL EVENTO CONTIENE CARACTERES NO NUMERICOS");
+                            break;
+                        }
+                    }
+                         
+                   
+                    if(continuar){ // SI LA INSTRUCCION TIENE LETRAS NO VA A CONTINUAR VERIFICANDO Y PASARA LA LA SIGIENTE INSTRUCCION
+                    
+                    // VERIFICA QUE EL TAMAÑAÑO DE CADA DATO DE LA INSTRUCCION SEA EL CORRECTO
+                    if (datos[0].length() == 4) {
+                        if (datos[1].length() == 1) {
+                            if (datos[2].length() == 1) {
+                                if (datos[3].length() == 3) {
+                                    if (datos[4].length() == 3) {
+                                        if (datos[5].length() == 1) {
+                                            
+                                            // SI EL TAMAÑO DE LOS DATOS ES CORRECTO VERIFICA QUE ESTOS TENGAN SENIDO
+                                            if (val[1] == 0) { // LA INSTRUCCION ESTE EN EL ESTADO NUEVO
+                                                if(val[2] > 0 && val[2] < 4){
+                                                    if(val[4] < val[3]){
+                                                        if(val[5] == 3 || val[5] == 5){
+                                                            
+                                                            if( !listaNuevo.valID(val[0])){
+                                                                 // SI HA PASADO TODAS LAS VALIDACIONES SE GUARDA EN LA LISTA
+                                                                listaNuevo.InsertaUltimo(val[0], val[1],val[2],val[3],val[4],val[5]);
+                                                                 jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  INSTRUCCION ACEPTADA");
+                                                                
+                                                            }else{
+                                                                jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** ID DE INSTRUCCION YA EXISTE");
+                                                            }
+                                            
+                                                        }else{
+                                                            jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** EVENTO DE BLOQUEO INVALIDO");
+                                                        }
+                                                    }else{
+                                                        jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** INSTRUCCION DE BLOQUEO ES MAYOR QUE EL NUMERO DE INSTRUCCIONES");
+                                                    }
+                                                }else{
+                                                    jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  **EL VALOR DE LA PRIORIDAD NO ES VALIDO");
+                                                }
+                                                
+                                            }else{
+                                                jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** LA INSTRUCCION NO ESTA EN EL ESTADO DE INICIO");
+                                            }
+                                            
+                                        }else{
+                                            jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** TAMAÑO DEL EVENTO DIFERENTE DE 1");
+                                         }
+                                    }else{
+                                        jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** TAMAÑO DE INSTRUCCION DE BLOQUEO DIFERENTE DE 3");
+                                    }
+                                }else{
+                                    jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** TAMAÑO DE CANTIDAD DE INSTRUCCIONES ES DIFERENTE DE 3");
+                                }
+                             }else{
+                                jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** TAMAÑO DE LA PRIORIDAD ES DIFERENTE DE 1");
+                            }
+                        }else{
+                            jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** TAMAÑO DEL ESTADO ES DIFERENTE DE 1");
+                         }
+                    }else{
+                        jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  ** TAMAÑO DEL ID ES DIFERENTE DE 4");
+                    }
+                        
+                        //KKKKKKKKKKKKKKKKKKKKK
+                
+                    }
+                
+               proceso = "";
+            }else{ // SI LA INSTRUCCION TIENE UN TAMAÑO DISTRINTO DE 18 CARACTERES
+                if (proceso.length() > 18) {
+                    jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  *** EL PROCESO TIENE MAS CARACTERES DE LO ESPERADO");
+                }else if (proceso.length() < 18) {
+                    jTextArea1.setText(jTextArea1.getText() + "\n" + proceso + "  *** EL PROCESO TIENE MENOS CARACTERES DE LO ESPERADO");
+                }
+                      
+                
+                proceso = "";
+            }
+        }
+            
+            
+            
         }catch(Exception e){
             
         }
@@ -165,36 +299,7 @@ public class leerArchivo extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        String cadena = jTextArea1.getText();
-        char[] info = cadena.toCharArray();
-         String proceso = "";
-        Lista listaNuevo = new Lista(); // instancia lista Nuevo
-        for (int n = 0; n < info.length ; n++) {
-            if(info[n] !=  ';'){
-            proceso = proceso + info[n];
-            }else if(proceso.length() == 18){
-                String datos[] = new String[6];
-                String dato = "";
-                int d = 0;
-                char temp[] = proceso.toCharArray();
-                for (int m = 0; m < proceso.length(); m++) {
-                    if(temp[m] == '/'){
-                        datos[d] = dato;
-                        dato = "";
-                        d++;
-                    }else{
-                        dato = dato + temp[m];
-                    }      
-                }
-                datos[d] = dato;
-               procesoNuevo nuevo = new procesoNuevo(datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]);
-               listaNuevo.InsertaInicio(nuevo);
-               JOptionPane.showMessageDialog(this, nuevo.mostrarDatos());
-               proceso = "";
-            }else{
-                proceso = "";
-            }
-        }
+        // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

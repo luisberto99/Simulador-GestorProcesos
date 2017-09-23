@@ -11,67 +11,77 @@ package gestor;
  */
 public class procesoNuevo {
     
-   private String id;
-   private String estado;
-   private String prioridad;
-   private String cantidadInstrucciones;
-   private String instruccionBloqueo;
-   private String evento;
+   private int id;
+   private int estado;
+   private int prioridad;
+   private int cantidadInstrucciones;
+   private int instruccionBloqueo;
+   private int evento;
+   private procesoNuevo procesoSiguiente;
 
-    public procesoNuevo(String id, String estado,String prioridad, String cantidadInstrucciones, String instruccionBloqueo, String evento) {
+    public procesoNuevo(int id, int estado, int prioridad, int cantidadInstrucciones, int instruccionBloqueo, int evento) {
         this.id = id;
         this.estado = estado;
         this.prioridad = prioridad;
         this.cantidadInstrucciones = cantidadInstrucciones;
         this.instruccionBloqueo = instruccionBloqueo;
         this.evento = evento;
+        this.procesoSiguiente = null;
     }
 
-    public String getId() {
+    public procesoNuevo getProcesoSiguiente() {
+        return procesoSiguiente;
+    }
+
+    public void setProcesoSiguiente(procesoNuevo procesoSiguiente) {
+        this.procesoSiguiente = procesoSiguiente;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getEstado() {
+    public int getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(int estado) {
         this.estado = estado;
     }
 
-    public String getCantidadInstrucciones() {
+    public int getCantidadInstrucciones() {
         return cantidadInstrucciones;
     }
 
-    public void setCantidadInstrucciones(String cantidadInstrucciones) {
+    public void setCantidadInstrucciones(int cantidadInstrucciones) {
         this.cantidadInstrucciones = cantidadInstrucciones;
     }
 
-    public String getInstruccionBloqueo() {
+    public int getInstruccionBloqueo() {
         return instruccionBloqueo;
     }
 
-    public void setInstruccionBloqueo(String instruccionBloqueo) {
+    public void setInstruccionBloqueo(int instruccionBloqueo) {
         this.instruccionBloqueo = instruccionBloqueo;
     }
 
-    public String getEvento() {
+    public int getEvento() {
         return evento;
     }
 
-    public void setEvento(String evento) {
+    public void setEvento(int evento) {
         this.evento = evento;
     }
 
-    public String getPrioridad() {
+    public int getPrioridad() {
         return prioridad;
     }
 
-    public void setPrioridad(String prioridad) {
+    public void setPrioridad(int prioridad) {
         this.prioridad = prioridad;
     }
     
